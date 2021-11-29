@@ -1,6 +1,6 @@
 ## AWS Lambda with serverless framework
 
-This code in this repository is explained in this Medium Article.
+This code in this repository is explained in this [Medium Article](https://medium.com/@ajays871/aws-lambda-function-with-serverless-framework-13493221e863).
 
 - This repository contains examples of [AWS lambda function ](https://aws.amazon.com/lambda/ "AWS lambda function ")attached to S3, API Gateway, SNS topic.
 - The code uses [Serverless Framework](https://www.serverless.com/ "Serverless Framework") to deploy the lambda functions and managing the infrastructure.
