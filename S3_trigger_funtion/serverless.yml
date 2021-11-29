@@ -1,0 +1,54 @@
+org: ajaysz
+app: aws_serverless
+service: s3-trigger-function
+
+provider:
+  name: aws
+  runtime: python3.7
+  memorySize: 1024 # optional, in MB, default is 1024
+  timeout: 900 # optional, in seconds, default is 6
+  region: ap-south-1
+  stage: live
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+        - lambda:InvokeFunction
+      Resource: "*"
+
+  deploymentBucket:
+    name: serverless-deployment-azk
+    maxPreviousDeploymentArtifacts: 10
+    blockPublicAccess: true
+    tags:
+      service: ${self:service}
+
+# you can add packaging information here
+package:
+  individually: true
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    invalidateCaches: true
+    useDownloadCache: false
+  secrets: ${file(secrets.live.yml)}
+
+functions:
+  s3-trigger-function:
+    handler: lambda_handler.handler
+    module: lambda_function
+    description: Resize images and upload to destination bucket
+    environment:
+       DESTINATION_BUCKET: ${self:custom.secrets.DESTINATION_BUCKET}
+    events:
+      - s3:
+          bucket: unmodified-images-bucket
+          event: s3:ObjectCreated:*
+          rules:
+            - suffix: .png
+          existing: true
+
+plugins:
+  - serverless-python-requirements
+  - serverless-secrets-plugin

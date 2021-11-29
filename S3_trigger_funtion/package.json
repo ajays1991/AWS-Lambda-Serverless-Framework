@@ -1,0 +1,12 @@
+{
+  "name": "s3_trigger_function",
+  "description": "",
+  "version": "0.1.0",
+  "dependencies": {
+    "serverless-secrets-plugin": "^0.1.0"
+  },
+  "devDependencies": {
+    "serverless": "^2.67.0",
+    "serverless-python-requirements": "^5.1.1"
+  }
+}

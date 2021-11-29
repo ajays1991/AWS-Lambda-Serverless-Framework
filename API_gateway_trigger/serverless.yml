@@ -1,0 +1,56 @@
+org: ajaysz
+app: aws_serverless
+service: api-gateway-trigger-function
+
+provider:
+  name: aws
+  runtime: python3.7
+  memorySize: 4096
+  timeout: 900
+  stage: live
+  region: ap-south-1
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+        - "lambda:*"
+      Resource: "*"
+  deploymentBucket:
+    name: serverless-deployment-azk
+    maxPreviousDeploymentArtifacts: 10
+    blockPublicAccess: true
+    tags:
+      service: ${self:service}
+  apiGateway:
+    apiKeys:
+      - name: API_KEY
+        value: ${self:custom.secrets.API_KEY}
+
+# you can add packaging information here
+package:
+  individually: true
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    invalidateCaches: true
+    useDownloadCache: false
+  secrets: ${file(secrets.live.yml)}
+
+functions:
+  console-reconciliation:
+    handler: lambda_handler.handler
+    module: lambda_function
+    description: API gateway trigger function used to get weather information for given city
+    environment:
+      WEATHER_API_KEY: ${self:custom.secrets.WEATHER_API_KEY}
+      WEATHER_API_URL: ${self:custom.secrets.WEATHER_API_URL}
+    events:
+      - http:
+          path: weather-report
+          method: post
+          private: true
+
+plugins:
+  - serverless-python-requirements
+  - serverless-secrets-plugin

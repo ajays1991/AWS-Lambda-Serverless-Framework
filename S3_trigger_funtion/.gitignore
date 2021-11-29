@@ -1,0 +1,9 @@
+/node_modules/
+/package-lock.json
+/.serverless/
+/secrets.live.yml
+
+#python
+*.pyc
+.venv
+env

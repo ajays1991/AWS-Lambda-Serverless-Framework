@@ -1,0 +1,51 @@
+org: ajaysz
+app: aws_serverless
+service: sns-trigger-function
+
+provider:
+  name: aws
+  runtime: python3.7
+  memorySize: 1024
+  timeout: 900
+  stage: live
+  region: ap-south-1
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "s3:*"
+        - "lambda:*"
+      Resource: "*"
+  deploymentBucket:
+    name: serverless-deployment-azk
+    maxPreviousDeploymentArtifacts: 10
+    blockPublicAccess: true
+    tags:
+      service: ${self:service}
+
+package:
+  individually: true
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    invalidateCaches: true
+    useDownloadCache: false
+  secrets: ${file(secrets.live.yml)}
+
+functions:
+  console-reconciliation:
+    handler: lambda_handler.handler
+    module: lambda_function
+    description: Function is used to listen to SNS events and save data in RDS
+    environment:
+      RDS_HOST: ${self:custom.secrets.RDS_HOST}
+      RDS_USER: ${self:custom.secrets.RDS_USER}
+      RDS_PASSWORD: ${self:custom.secrets.RDS_PASSWORD}
+      RDS_DATABASE: ${self:custom.secrets.RDS_DATABASE}
+      RDS_CHARSET: ${self:custom.secrets.RDS_CHARSET}
+    events:
+      - sns: ${self:custom.secrets.SNS_NAME}
+
+plugins:
+  - serverless-python-requirements
+  - serverless-secrets-plugin
