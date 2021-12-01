@@ -33,7 +33,7 @@ custom:
   secrets: ${file(secrets.live.yml)}
 
 functions:
-  console-reconciliation:
+  tractor-sensor:
     handler: lambda_handler.handler
     module: lambda_function
     description: Function is used to listen to SNS events and save data in RDS

@@ -38,7 +38,7 @@ custom:
   secrets: ${file(secrets.live.yml)}
 
 functions:
-  console-reconciliation:
+  weather-report:
     handler: lambda_handler.handler
     module: lambda_function
     description: API gateway trigger function used to get weather information for given city
